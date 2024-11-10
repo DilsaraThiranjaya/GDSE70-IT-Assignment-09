@@ -1,3 +1,0 @@
-customerArray = [];
-itemArray = [];
-orderArray = [];
