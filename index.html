@@ -22,12 +22,12 @@
                     <img src="/assets/images/POS-logo.png" alt="Logo" class="d-inline-block align-text-top header-logo">
                     POS System
                 </a>
-                <button id="burger-btn" class="navbar-toggler border-2 border-success d-none" type="button"
+                <button id="burger-btn" class="navbar-toggler border-2 border-success" type="button"
                     data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul id="nav-bar" class="navbar-nav ml-auto w-100 ms-md-3 d-none">
+                    <ul id="nav-bar" class="navbar-nav ml-auto w-100 ms-md-3">
                         <li class="nav-item" id="tab-1" onclick="showTab(1)">
                             <a class="nav-link fw-semibold active" href="#"><i class="bi bi-house"></i>
                                 Home</a>
@@ -44,7 +44,7 @@
                             <a class="nav-link fw-semibold text-success" href="#"><i class="bi bi-box"></i>
                                 Items</a>
                         </li>
-                        <li class="nav-item ms-md-auto">
+                        <!-- <li class="nav-item ms-md-auto">
                             <div class="d-flex w-100 justify-content-center">
                                 <button id="signup-nav-btn" class="btn fw-medium text-dark">
                                     <i class="fa-solid fa-user-plus"></i>
@@ -53,7 +53,7 @@
                                     <i class="fa-solid fa-right-from-bracket"></i>
                                     Log Out</button>
                             </div>
-                        </li>
+                        </li> -->
                     </ul>
                 </div>
             </div>
@@ -62,7 +62,7 @@
 
     <main>
         <!-- Login Section -->
-        <section id="login-content" class="d-block">
+        <!-- <section id="login-content" class="d-block">
             <div class="container">
                 <div class="row align-items-center justify-content-center py-2 my-5">
                     <div class="col-md-5">
@@ -107,10 +107,10 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <!-- Sign Up Section -->
-        <section id="signup-content" class="d-none">
+        <!-- <section id="signup-content" class="d-none">
             <div class="container">
                 <div class="row min-vh-100 align-items-center justify-content-center">
                     <div class="col-md-6">
@@ -173,10 +173,10 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <!-- Forgot Password Section -->
-        <section id="forgot-password-content" class="d-none">
+        <!-- <section id="forgot-password-content" class="d-none">
             <div class="container">
                 <div class="row min-vh-100 align-items-center justify-content-center">
                     <div class="col-md-5">
@@ -237,10 +237,16 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> -->
+        
+        <!-- If Uncomment above Sections, 
+                                                                                                                                                                                                                                                                                                                                                                                                        * Change Home Section(#tab-content-1) class d-block to d-none.
+                                                                                                                                                                                                                                                                                                                                                                                                        * Add d-none class to #burger-btn and #nav-bar. 
+                                                                                                                                                                                                                                                                                                                                                                                                        * Uncomment Signup and Logout buttons in Navbar.
+                                                                                                                                                                                                                                                                                                                                                                                                Functions not setup yet in above sections -->
 
         <!-- Home Section -->
-        <section id="tab-content-1" class="d-none">
+        <section id="tab-content-1" class="d-block">
             <div class="container">
                 <div class="row label p-2 m-auto">
                     <div class="col-md-12">
@@ -386,38 +392,42 @@
                     <div class="modal-content rounded-0">
                         <div class="modal-header bg-success text-white  rounded-0">
                             <h5 class="modal-title">New Customer</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            <button type="button" id="close-savec-icon" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
-                            <form>
+                            <form id="save-customer" class="needs-validation" novalidate>
                                 <div class="mb-1">
-                                    <label class="form-label fw-bold">Customer ID :</label>
-                                    <input type="text" class="form-control border-1 border-dark-subtle rounded-1 my-0"
-                                        required>
+                                    <label for="txt-customer-id" class="form-label fw-bold">Customer ID :</label>
+                                    <input type="text" id="txt-save-cid" class="form-control border-1 border-dark-subtle rounded-1 my-0"
+                                        pattern="^C00[0-9]+$" required>
+                                    <div class="invalid-feedback error-bg">Customer ID is required [ Pattern : C00X ]</div>
                                 </div>
+
                                 <div class="mb-1">
-                                    <label class="form-label fw-bold">Customer Name :</label>
-                                    <input type="text" class="form-control border-1 border-dark-subtle rounded-1 my-0"
-                                        required>
+                                    <label for="txt-customer-name" class="form-label fw-bold">Customer Name :</label>
+                                    <input type="text" id="txt-save-cname" class="form-control border-1 border-dark-subtle rounded-1 my-0" required>
+                                    <div class="invalid-feedback error-bg">Customer name is required</div>
                                 </div>
+
                                 <div class="mb-1">
-                                    <label class="form-label fw-bold">Customer Address :</label>
-                                    <textarea class="form-control border-1 border-dark-subtle rounded-1 my-0" rows="3"
+                                    <label for="txt-customer-address" class="form-label fw-bold">Customer Address :</label>
+                                    <textarea id="txt-save-caddress" class="form-control border-1 border-dark-subtle rounded-1 my-0" rows="3"
                                         required></textarea>
+                                    <div class="invalid-feedback error-bg">Customer address is required</div>
                                 </div>
+
                                 <div class="mb-1">
-                                    <label class="form-label fw-bold">Customer Contact No :</label>
-                                    <input type="text" class="form-control border-1 border-dark-subtle rounded-1 my-0"
-                                        required>
+                                    <label for="txt-customer-cno" class="form-label fw-bold">Customer Contact No :</label>
+                                    <input type="text" id="txt-save-cno" class="form-control border-1 border-dark-subtle rounded-1 my-0"
+                                        pattern="^[0-9]{10}$" required>
+                                    <div class="invalid-feedback error-bg">Enter a valid 10-digit contact number</div>
+                                </div>
+
+                                <div class="modal-footer button-set mt-4">
+                                    <button type="submit" id="save-customer-btn" class="btn btn-info rounded-1 text-light">Save</button>
+                                    <button type="button" id="close-savec-btn" class="btn btn-danger rounded-1" data-bs-dismiss="modal">Close</button>
                                 </div>
                             </form>
-                        </div>
-                        <div class="modal-footer button-set">
-                            <button type="button" class="btn btn-info rounded-1 text-light">Save</button>
-                            <button type="button" class="btn btn-warning rounded-1">Renew</button>
-                            <button type="button" class="btn btn-danger rounded-1"
-                                data-bs-dismiss="modal">Close</button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -866,6 +876,30 @@
                 </div>
             </div>
         </section>
+<!-- Success Toast -->
+<div id="success-toast" class="toast align-items-center text-white bg-success border-0 position-fixed top-0 end-0 m-3"
+    role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+        <div class="toast-body">
+            Success! Messege.
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+            aria-label="Close"></button>
+    </div>
+</div>
+
+<!-- Error Toast -->
+<div id="error-toast" class="toast align-items-center text-white bg-danger border-0 position-fixed top-0 end-0 m-3"
+    role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+        <div class="toast-body">
+            Error! Messege.
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+            aria-label="Close"></button>
+    </div>
+</div>
+
     </main>
 
     <footer class="text-center text-white border-3 border-top border-success rounded-3 mt-4"

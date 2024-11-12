@@ -10,15 +10,16 @@ function loadScript(url, defer = true) {
 }
 
 loadScript('/db/DB.js');
-loadScript('/models/User.js');
+loadScript('/util/CustomAlert.js');
+// loadScript('/models/User.js');
 loadScript('/models/Customer.js');
 loadScript('/models/Order.js');
 loadScript('/models/OrderDetail.js');
 loadScript('/models/Item.js');
 loadScript('/controllers/IndexController.js');
-loadScript('/controllers/LoginController.js');
-loadScript('/controllers/SignupController.js');
-loadScript('/controllers/ForgotPasswordController.js');
+// loadScript('/controllers/LoginController.js');
+// loadScript('/controllers/SignupController.js');
+// loadScript('/controllers/ForgotPasswordController.js');
 loadScript('/controllers/HomeController.js');
 loadScript('/controllers/CustomerController.js');
 loadScript('/controllers/OrderController.js');

@@ -78,4 +78,16 @@
   font-size: 3rem;
 }
 
+.error-bg {
+  background-color: rgba(255, 98, 98, 0.541) !important;
+  border-width: 0 0 0 3px !important;
+  border-style: solid !important;
+  border-color: red !important;
+  padding: 5px !important;
+}
+
+#success-toast, #error-toast {
+  z-index: 1070 !important;  /* Higher than modal's z-index */
+}
+
 

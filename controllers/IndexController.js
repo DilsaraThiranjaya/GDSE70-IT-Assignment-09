@@ -10,19 +10,19 @@ function showTab(value) {
     navbarCollapse.hide();
 }
 
-$('#signup-nav-btn').on('click', () => {
-    $('.d-block').first().addClass('d-none').removeClass('d-block');
-    $('#signup-content').addClass('d-block').removeClass('d-none');
-    $('#burger-btn').addClass('d-none');
-    $('#nav-bar').addClass('d-none');
-});
+// $('#signup-nav-btn').on('click', () => {
+//     $('.d-block').first().addClass('d-none').removeClass('d-block');
+//     $('#signup-content').addClass('d-block').removeClass('d-none');
+//     $('#burger-btn').addClass('d-none');
+//     $('#nav-bar').addClass('d-none');
+// });
 
-$('#logout-nav-btn').on('click', () => {
-    $('.d-block').first().addClass('d-none').removeClass('d-block');
-    $('#login-content').addClass('d-block').removeClass('d-none');
-    $('#burger-btn').addClass('d-none');
-    $('#nav-bar').addClass('d-none');
-});
+// $('#logout-nav-btn').on('click', () => {
+//     $('.d-block').first().addClass('d-none').removeClass('d-block');
+//     $('#login-content').addClass('d-block').removeClass('d-none');
+//     $('#burger-btn').addClass('d-none');
+//     $('#nav-bar').addClass('d-none');
+// });
 
 $(document).keydown((event) => {
     if (event.key === 'Tab') {
