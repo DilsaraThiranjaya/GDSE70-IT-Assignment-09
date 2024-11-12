@@ -397,27 +397,27 @@
                         <div class="modal-body">
                             <form id="save-customer" class="needs-validation" novalidate>
                                 <div class="mb-1">
-                                    <label for="txt-customer-id" class="form-label fw-bold">Customer ID :</label>
+                                    <label for="txt-save-cid" class="form-label fw-bold">Customer ID :</label>
                                     <input type="text" id="txt-save-cid" class="form-control border-1 border-dark-subtle rounded-1 my-0"
-                                        pattern="^C00[0-9]+$" required>
+                                        pattern="^C[0-9]{3,}$" required>
                                     <div class="invalid-feedback error-bg">Customer ID is required [ Pattern : C00X ]</div>
                                 </div>
 
                                 <div class="mb-1">
-                                    <label for="txt-customer-name" class="form-label fw-bold">Customer Name :</label>
+                                    <label for="txt-save-cname" class="form-label fw-bold">Customer Name :</label>
                                     <input type="text" id="txt-save-cname" class="form-control border-1 border-dark-subtle rounded-1 my-0" required>
                                     <div class="invalid-feedback error-bg">Customer name is required</div>
                                 </div>
 
                                 <div class="mb-1">
-                                    <label for="txt-customer-address" class="form-label fw-bold">Customer Address :</label>
+                                    <label for="txt-save-caddress" class="form-label fw-bold">Customer Address :</label>
                                     <textarea id="txt-save-caddress" class="form-control border-1 border-dark-subtle rounded-1 my-0" rows="3"
                                         required></textarea>
                                     <div class="invalid-feedback error-bg">Customer address is required</div>
                                 </div>
 
                                 <div class="mb-1">
-                                    <label for="txt-customer-cno" class="form-label fw-bold">Customer Contact No :</label>
+                                    <label for="txt-save-cno" class="form-label fw-bold">Customer Contact No :</label>
                                     <input type="text" id="txt-save-cno" class="form-control border-1 border-dark-subtle rounded-1 my-0"
                                         pattern="^[0-9]{10}$" required>
                                     <div class="invalid-feedback error-bg">Enter a valid 10-digit contact number</div>
@@ -428,8 +428,9 @@
                                     <button type="button" id="close-savec-btn" class="btn btn-danger rounded-1" data-bs-dismiss="modal">Close</button>
                                 </div>
                             </form>
-                    </div>
-                </div>
+                        </div>
+                        </div>
+                        </div>
             </div>
 
             <!-- ------------ Update Customer Model ------------ -->
@@ -438,36 +439,42 @@
                     <div class="modal-content rounded-0">
                         <div class="modal-header bg-success text-white  rounded-0">
                             <h5 class="modal-title">Update Customer</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            <button type="button" id="close-updatec-icon" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
-                            <form>
+                            <form id="update-customer" class="needs-validation" novalidate>
                                 <div class="mb-1">
-                                    <label class="form-label fw-bold">Customer ID :</label>
-                                    <input type="text" class="form-control border-1 border-dark-subtle rounded-1 my-0"
-                                        required>
+                                    <label for="txt-update-cid" class="form-label fw-bold">Customer ID :</label>
+                                    <input type="text" id="txt-update-cid" class="form-control border-1 border-dark-subtle rounded-1 my-0"
+                                        pattern="^C[0-9]{3,}$" required>
+                                    <div class="invalid-feedback error-bg">Customer ID is required [ Pattern : C00X ]</div>
                                 </div>
+
                                 <div class="mb-1">
-                                    <label class="form-label fw-bold">Customer Name :</label>
-                                    <input type="text" class="form-control border-1 border-dark-subtle rounded-1 my-0"
-                                        required>
+                                    <label for="txt-update-cname" class="form-label fw-bold">Customer Name :</label>
+                                    <input type="text" id="txt-update-cname" class="form-control border-1 border-dark-subtle rounded-1 my-0" required>
+                                    <div class="invalid-feedback error-bg">Customer name is required</div>
                                 </div>
+
                                 <div class="mb-1">
-                                    <label class="form-label fw-bold">Customer Address :</label>
-                                    <textarea class="form-control border-1 border-dark-subtle rounded-1 my-0" rows="3"
+                                    <label for="txt-update-caddress" class="form-label fw-bold">Customer Address :</label>
+                                    <textarea id="txt-update-caddress" class="form-control border-1 border-dark-subtle rounded-1 my-0" rows="3"
                                         required></textarea>
+                                    <div class="invalid-feedback error-bg">Customer address is required</div>
                                 </div>
+
                                 <div class="mb-1">
-                                    <label class="form-label fw-bold">Customer Contact No :</label>
-                                    <input type="text" class="form-control border-1 border-dark-subtle rounded-1 my-0"
-                                        required>
+                                    <label for="txt-update-cno" class="form-label fw-bold">Customer Contact No :</label>
+                                    <input type="text" id="txt-update-cno" class="form-control border-1 border-dark-subtle rounded-1 my-0"
+                                        pattern="^[0-9]{10}$" required>
+                                    <div class="invalid-feedback error-bg">Enter a valid 10-digit contact number</div>
+                                    </div>
+                                    
+                                    <div class="modal-footer button-set mt-4">
+                                        <button type="submit" id="update-customer-btn" class="btn btn-info rounded-1 text-light">Update</button>
+                                        <button type="button" id="close-updatec-btn" class="btn btn-danger rounded-1" data-bs-dismiss="modal">Close</button>
                                 </div>
                             </form>
-                        </div>
-                        <div class="modal-footer button-set">
-                            <button type="button" class="btn btn-info rounded-1 text-light">Update</button>
-                            <button type="button" class="btn btn-danger rounded-1"
-                                data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -877,7 +884,7 @@
             </div>
         </section>
 <!-- Success Toast -->
-<div id="success-toast" class="toast align-items-center text-white bg-success border-0 position-fixed top-0 end-0 m-3"
+<div id="success-toast" class="toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 m-3"
     role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
         <div class="toast-body">
@@ -889,7 +896,7 @@
 </div>
 
 <!-- Error Toast -->
-<div id="error-toast" class="toast align-items-center text-white bg-danger border-0 position-fixed top-0 end-0 m-3"
+<div id="error-toast" class="toast align-items-center text-white bg-danger border-0 position-fixed bottom-0 end-0 m-3"
     role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
         <div class="toast-body">
