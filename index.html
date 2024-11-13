@@ -308,18 +308,18 @@
                             <div class="col-md-6">
                                 <h2 class="fw-normal fs-5 ps-3 p-2 m-0 w-100 bg-success text-light">Customer Search</h2>
                                 <div class="search bg-light p-3">
-                                    <form class="px-2" action="search">
+                                    <form id="search-customer" class="px-2" action="search">
                                         <div class="mb-3">
-                                            <input type="text"
-                                                class="form-control border-1 border-dark-subtle rounded-1 my-3"
-                                                placeholder="Input Name/NIC/Tp Here" required>
-                                            <div class="d-flex">
-                                                <button class="btn btn-success rounded-1">Search
+                                            <input type="text" id="txt-search-value" class="form-control border-1 border-dark-subtle rounded-1 my-0"
+                                                placeholder="Input ID/Name/Contact No Here" required>
+                                            <div class="invalid-feedback error-bg">Please enter a valid ID, Name, or Contact Number</div>
+                                            <div class="d-flex mt-3">
+                                                <button type="submit" class="btn btn-success rounded-1">Search
                                                 </button>
-                                                <select
+                                                <select id="search-customer-by"
                                                     class="form-select ms-2 w-25 border-1 border-dark-subtle rounded-1">
-                                                    <option>Name</option>
                                                     <option>ID</option>
+                                                    <option>Name</option>
                                                     <option>Contact No</option>
                                                 </select>
                                             </div>
@@ -333,7 +333,7 @@
                                         data-bs-target="#newCustomerModal">
                                         New Customer
                                     </button>
-                                    <button class="btn btn-warning px-4 rounded-1 w-100">
+                                    <button id="load-all-customer-btn" class="btn btn-warning px-4 rounded-1 w-100">
                                         View All Customers
                                     </button>
                                 </div>
@@ -342,14 +342,14 @@
                         <div class="row button-set m-auto">
                             <div class="col-12 px-3">
                                 <div class="p-md-3 py-3 d-flex justify-content-md-start justify-content-center gap-1">
-                                    <button class="btn btn-danger px-4 rounded-1">
+                                    <button id="delete-customer-btn" class="btn btn-danger px-4 rounded-1">
                                         Delete
                                     </button>
                                     <button class="btn btn-info text-white px-4 rounded-1" data-bs-toggle="modal"
                                         data-bs-target="#updateCustomerModal">
                                         Update
                                     </button>
-                                    <button class="btn btn-success text-white px-4 rounded-1">
+                                    <button id="clear-customer-btn" class="btn btn-success text-white px-4 rounded-1">
                                         Clear
                                     </button>
                                 </div>
@@ -370,13 +370,7 @@
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody class=" border-1 border-success-subtle">
-                                            <!-- <tr>
-                                                <td>C001</td>
-                                                <td>John Doe</td>
-                                                <td>123 Main St</td>
-                                                <td>0766677409</td>
-                                            </tr> -->
+                                        <tbody id="customer-tbody" class=" border-1 border-success-subtle">
                                         </tbody>
                                     </table>
                                 </div>
@@ -395,7 +389,7 @@
                             <button type="button" id="close-savec-icon" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="save-customer" class="needs-validation" novalidate>
+                            <form id="save-customer">
                                 <div class="mb-1">
                                     <label for="txt-save-cid" class="form-label fw-bold">Customer ID :</label>
                                     <input type="text" id="txt-save-cid" class="form-control border-1 border-dark-subtle rounded-1 my-0"
@@ -405,15 +399,17 @@
 
                                 <div class="mb-1">
                                     <label for="txt-save-cname" class="form-label fw-bold">Customer Name :</label>
-                                    <input type="text" id="txt-save-cname" class="form-control border-1 border-dark-subtle rounded-1 my-0" required>
-                                    <div class="invalid-feedback error-bg">Customer name is required</div>
+                                    <input type="text" id="txt-save-cname" class="form-control border-1 border-dark-subtle rounded-1 my-0"
+                                        pattern="^([A-Z]\.[A-Z]\. )?[A-Z][a-z]*( [A-Z][a-z]*)*$" required>
+                                    <div class="invalid-feedback error-bg">Customer name is required and must follow the correct format</div>
                                 </div>
 
                                 <div class="mb-1">
                                     <label for="txt-save-caddress" class="form-label fw-bold">Customer Address :</label>
                                     <textarea id="txt-save-caddress" class="form-control border-1 border-dark-subtle rounded-1 my-0" rows="3"
+                                        pattern="^[A-Za-z0-9\s,./-]+(?:\s+[A-Za-z0-9\s,./-]+)*$"
                                         required></textarea>
-                                    <div class="invalid-feedback error-bg">Customer address is required</div>
+                                    <div class="invalid-feedback error-bg">Customer address is required and must follow the correct format</div>
                                 </div>
 
                                 <div class="mb-1">
@@ -424,7 +420,7 @@
                                 </div>
 
                                 <div class="modal-footer button-set mt-4">
-                                    <button type="submit" id="save-customer-btn" class="btn btn-info rounded-1 text-light">Save</button>
+                                    <button type="submit" class="btn btn-info rounded-1 text-light">Save</button>
                                     <button type="button" id="close-savec-btn" class="btn btn-danger rounded-1" data-bs-dismiss="modal">Close</button>
                                 </div>
                             </form>
@@ -442,7 +438,7 @@
                             <button type="button" id="close-updatec-icon" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="update-customer" class="needs-validation" novalidate>
+                            <form id="update-customer">
                                 <div class="mb-1">
                                     <label for="txt-update-cid" class="form-label fw-bold">Customer ID :</label>
                                     <input type="text" id="txt-update-cid" class="form-control border-1 border-dark-subtle rounded-1 my-0"
@@ -452,15 +448,17 @@
 
                                 <div class="mb-1">
                                     <label for="txt-update-cname" class="form-label fw-bold">Customer Name :</label>
-                                    <input type="text" id="txt-update-cname" class="form-control border-1 border-dark-subtle rounded-1 my-0" required>
-                                    <div class="invalid-feedback error-bg">Customer name is required</div>
+                                    <input type="text" id="txt-update-cname" class="form-control border-1 border-dark-subtle rounded-1 my-0"
+                                        pattern="^([A-Z]\.[A-Z]\. )?[A-Z][a-z]*( [A-Z][a-z]*)*$" required>
+                                    <div class="invalid-feedback error-bg">Customer name is required and must follow the correct format</div>
                                 </div>
 
                                 <div class="mb-1">
                                     <label for="txt-update-caddress" class="form-label fw-bold">Customer Address :</label>
                                     <textarea id="txt-update-caddress" class="form-control border-1 border-dark-subtle rounded-1 my-0" rows="3"
+                                        pattern="^[A-Za-z0-9\s,./-]+(?:\s+[A-Za-z0-9\s,./-]+)*$"
                                         required></textarea>
-                                    <div class="invalid-feedback error-bg">Customer address is required</div>
+                                    <div class="invalid-feedback error-bg">Customer address is required and must follow the correct format</div>
                                 </div>
 
                                 <div class="mb-1">
@@ -471,7 +469,7 @@
                                     </div>
                                     
                                     <div class="modal-footer button-set mt-4">
-                                        <button type="submit" id="update-customer-btn" class="btn btn-info rounded-1 text-light">Update</button>
+                                        <button type="submit" class="btn btn-info rounded-1 text-light">Update</button>
                                         <button type="button" id="close-updatec-btn" class="btn btn-danger rounded-1" data-bs-dismiss="modal">Close</button>
                                 </div>
                             </form>
@@ -906,6 +904,25 @@
             aria-label="Close"></button>
     </div>
 </div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal fade" id="confirm-delete-model" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Deletion</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Messege
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirm-delete-btn">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
     </main>
 
