@@ -1,12 +1,10 @@
 function loadScript(url, defer = true) {
-    const script = document.createElement('script');
-    script.src = url;
-    if (defer) {
-        script.defer = true;
-    } else {
-        script.async = true;
-    }
-    document.head.appendChild(script);
+    const script = $('<script>', {
+        src: url,
+        defer: defer,
+        async: !defer
+    });
+    $('head').append(script);
 }
 
 loadScript('/db/DB.js');

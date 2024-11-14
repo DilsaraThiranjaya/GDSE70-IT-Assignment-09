@@ -12,11 +12,11 @@ loadAllCustomers();
 //========================================================================================
 
 // Validate with regex pattern for Customer ID and Contact Number in real-time
-$('#save-customer input, #save-customer textarea').on('input change', realTimeValidate);
-$('#update-customer input, #update-customer textarea').on('input change', realTimeValidate);
+$('#save-customer input, #save-customer textarea').on('input change', realTimeValidateCustomer);
+$('#update-customer input, #update-customer textarea').on('input change', realTimeValidateCustomer);
 
 // Validate with regex pattern for Search Customer in real-time
-$('#txt-search-value').on('input', function () {
+$('#txt-search-valuec').on('input change', function () {
     const value = $(this).val();
     const option = $('#search-customer-by').val();
 
@@ -28,12 +28,12 @@ $('#txt-search-value').on('input', function () {
     };
 
     if (patterns[option]) {
-        realTimeValidateInput(value, patterns[option]);
+        realTimeValidateCustomerInputCustomer(value, patterns[option]);
     }
 });
 
 $('#search-customer-by').on('change', function () {
-    const value = $('#txt-search-value').val();
+    const value = $('#txt-search-valuec').val();
     const option = $(this).val();
 
     const patterns = {
@@ -43,24 +43,24 @@ $('#search-customer-by').on('change', function () {
     };
 
     if (patterns[option]) {
-        realTimeValidateInput(value, patterns[option]);
+        realTimeValidateCustomerInputCustomer(value, patterns[option]);
     }
 });
 
 // Reset form validation when Close button is clicked
 $('#close-savec-btn, #close-savec-icon').on('click', function () { 
-    resetForm('#save-customer', '#txt-save-cid, #txt-save-cno');
+    resetFormCustomer('#save-customer', '#save-customer input, #save-customer textarea');
     initializeNextCustomerId();
 });
 $('#close-updatec-btn, #close-updatec-icon').on('click', function () { 
-    resetForm('#update-customer', '#txt-update-cid, #txt-update-cno');
+    resetFormCustomer('#update-customer', '#update-customer input, #update-customer textarea');
 });
 
 //========================================================================================
 /*                                 Other Functions                                      */
 //========================================================================================
 
-function realTimeValidate() {
+function realTimeValidateCustomer() {
     const value = $(this).val();
     const pattern = new RegExp($(this).attr('pattern')); // Get the pattern from the input field
 
@@ -77,17 +77,17 @@ function realTimeValidate() {
     }
 }
 
-function realTimeValidateInput(input, pattern) {
+function realTimeValidateCustomerInputCustomer(input, pattern) {
     if (pattern.test(input)) {
-        $('#txt-search-value').removeClass('is-invalid').addClass('is-valid');
-        $('#txt-search-value').next().hide();
+        $('#txt-search-valuec').removeClass('is-invalid').addClass('is-valid');
+        $('#txt-search-valuec').next().hide();
     } else {
-        $('#txt-search-value').removeClass('is-valid').addClass('is-invalid');
-        $('#txt-search-value').next().show();
+        $('#txt-search-valuec').removeClass('is-valid').addClass('is-invalid');
+        $('#txt-search-valuec').next().show();
     }
 }
 
-function resetForm(formId, textFieldIds) {
+function resetFormCustomer(formId, textFieldIds) {
     let form = $(formId);
     form[0].reset(); // Clear all form fields
     $(textFieldIds).removeClass('is-invalid is-valid'); // Remove validation classes
@@ -173,10 +173,11 @@ $('#save-customer').on('submit', function (event) {
         if (!customerDatabase.some(c => c.id === id)) {
             customerDatabase.push(customer);
             showToast('success', 'Customer saved successfully !');
-            resetForm('#save-customer', '#save-customer input, #save-customer textarea');
+            resetFormCustomer('#save-customer', '#save-customer input, #save-customer textarea');
             initializeNextCustomerId();
             sortCustomerDatabaseById();
             loadAllCustomers();
+            loadCustomerCount();
         } else {
             showToast('error', 'Customer ID already exists !');
         }
@@ -217,7 +218,7 @@ $('#update-customer').on('submit', function (event) {
             const index = customerDatabase.findIndex(c => c.id === id);
             customerDatabase[index] = customer;
             showToast('success', 'Customer updated successfully !');
-            resetForm('#update-customer', '#update-customer input, #update-customer textarea');
+            resetFormCustomer('#update-customer', '#update-customer input, #update-customer textarea');
             loadAllCustomers();
         } else {
             showToast('error', 'Customer ID not found !');
@@ -229,10 +230,10 @@ $('#update-customer').on('submit', function (event) {
 $('#search-customer').on('submit', function (event) {
     event.preventDefault();
 
-    let isValidated = $('#txt-search-value').hasClass('is-valid');
+    let isValidated = $('#txt-search-valuec').hasClass('is-valid');
 
     if (isValidated) {
-        const value = $('#txt-search-value').val();
+        const value = $('#txt-search-valuec').val();
         const option = $('#search-customer-by').val();
 
         // Clear the table first
@@ -249,24 +250,24 @@ $('#search-customer').on('submit', function (event) {
             appendToCustomerTable(customers);
             showToast('success', 'Customer search completed successfully !');
         } else {
-            showToast('error', `Customer ${option} not found!`);
+            showToast('error', `Customer ${option} not found !`);
         }
     }
 });
 
 // Clear Customer
 $('#clear-customer-btn').on('click', function () {
-    $('#txt-search-value').val('');
-    $('#txt-search-value').removeClass('is-invalid is-valid');
-    $('#txt-search-value').next().hide();
+    $('#txt-search-valuec').val('');
+    $('#txt-search-valuec').removeClass('is-invalid is-valid');
+    $('#txt-search-valuec').next().hide();
     $('#search-customer-by').val('ID');
     $('#customer-tbody').empty();
-    showToast('success', 'Customer page Cleared !');
+    showToast('success', 'Customer page cleared !');
 });
 
 // Delete Customer
 $('#delete-customer-btn').on('click', function () {
-    const value = $('#txt-search-value').val();
+    const value = $('#txt-search-valuec').val();
     const option = $('#search-customer-by').val();
 
     const customers = getCustomerByOption(option, value);
@@ -278,7 +279,7 @@ $('#delete-customer-btn').on('click', function () {
         $('#confirm-delete-model').modal('show');
 
         // Attach event listener for confirming the delete
-        $('#confirm-delete-btn').on('click', function () {
+        $('#confirm-delete-btn').one('click', function () {
             for (const customer of customers) {
                 const index = customerDatabase.findIndex(c => c.id === customer.id);
                 if (index !== -1) {
@@ -288,12 +289,13 @@ $('#delete-customer-btn').on('click', function () {
             showToast('success', 'Customer deleted successfully!');
             $('#confirm-delete-model').modal('hide');  // Hide modal after deletion
             loadAllCustomers();
+            loadCustomerCount();
         });
     } else if (customers && !Array.isArray(customers)) {
         $('#confirm-delete-model .modal-body').text('Are you sure you want to delete this customer ?');
         $('#confirm-delete-model').modal('show');
 
-        $('#confirm-delete-btn').on('click', function () {
+        $('#confirm-delete-btn').one('click', function () {
             const index = customerDatabase.findIndex(c => c.id === customers.id);
             if (index !== -1) {
                 customerDatabase.splice(index, 1);
@@ -301,6 +303,7 @@ $('#delete-customer-btn').on('click', function () {
             showToast('success', 'Customer deleted successfully!');
             $('#confirm-delete-model').modal('hide');
             loadAllCustomers();
+            loadCustomerCount();
         });
     } else {
         showToast('error', `Customer ${option} not found!`);
