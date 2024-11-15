@@ -1,5 +1,4 @@
-function OrderDetail(orderId, itemCode, qty) {
-    this.orderId = orderId;
+function OrderDetail(itemCode, qty) {
     this.itemCode = itemCode;
     this.qty = qty;
 }

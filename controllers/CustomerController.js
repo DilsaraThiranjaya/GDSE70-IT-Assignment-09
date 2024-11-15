@@ -12,8 +12,8 @@ loadAllCustomers();
 //========================================================================================
 
 // Validate with regex pattern for Customer ID and Contact Number in real-time
-$('#save-customer input, #save-customer textarea').on('input change', realTimeValidateCustomer);
-$('#update-customer input, #update-customer textarea').on('input change', realTimeValidateCustomer);
+$('#save-customer input, #save-customer textarea').on('input change', realTimeValidate);
+$('#update-customer input, #update-customer textarea').on('input change', realTimeValidate);
 
 // Validate with regex pattern for Search Customer in real-time
 $('#txt-search-valuec').on('input change', function () {
@@ -28,7 +28,7 @@ $('#txt-search-valuec').on('input change', function () {
     };
 
     if (patterns[option]) {
-        realTimeValidateCustomerInputCustomer(value, patterns[option]);
+        realTimeValidateInput(value, patterns[option], this);
     }
 });
 
@@ -43,56 +43,22 @@ $('#search-customer-by').on('change', function () {
     };
 
     if (patterns[option]) {
-        realTimeValidateCustomerInputCustomer(value, patterns[option]);
+        realTimeValidateInput(value, patterns[option], '#txt-search-valuec');
     }
 });
 
 // Reset form validation when Close button is clicked
 $('#close-savec-btn, #close-savec-icon').on('click', function () { 
-    resetFormCustomer('#save-customer', '#save-customer input, #save-customer textarea');
+    resetForm('#save-customer', '#save-customer input, #save-customer textarea');
     initializeNextCustomerId();
 });
 $('#close-updatec-btn, #close-updatec-icon').on('click', function () { 
-    resetFormCustomer('#update-customer', '#update-customer input, #update-customer textarea');
+    resetForm('#update-customer', '#update-customer input, #update-customer textarea');
 });
 
 //========================================================================================
 /*                                 Other Functions                                      */
 //========================================================================================
-
-function realTimeValidateCustomer() {
-    const value = $(this).val();
-    const pattern = new RegExp($(this).attr('pattern')); // Get the pattern from the input field
-
-    if (pattern.test(value)) {
-        // If the input matches the pattern, show valid feedback
-        $(this).removeClass('is-invalid');
-        $(this).addClass('is-valid');
-        $(this).next().hide(); // Hide error message
-    } else {
-        // If the input doesn't match the pattern, show invalid feedback
-        $(this).removeClass('is-valid');
-        $(this).addClass('is-invalid');
-        $(this).next().show(); // Show error message
-    }
-}
-
-function realTimeValidateCustomerInputCustomer(input, pattern) {
-    if (pattern.test(input)) {
-        $('#txt-search-valuec').removeClass('is-invalid').addClass('is-valid');
-        $('#txt-search-valuec').next().hide();
-    } else {
-        $('#txt-search-valuec').removeClass('is-valid').addClass('is-invalid');
-        $('#txt-search-valuec').next().show();
-    }
-}
-
-function resetFormCustomer(formId, textFieldIds) {
-    let form = $(formId);
-    form[0].reset(); // Clear all form fields
-    $(textFieldIds).removeClass('is-invalid is-valid'); // Remove validation classes
-    $(textFieldIds).next().hide(); // Hide error messages
-}
 
 function initializeNextCustomerId() {
     // Initialize Customer ID in New Customer
@@ -100,10 +66,6 @@ function initializeNextCustomerId() {
     const nextId = generateNextID(prevId);
     $('#txt-save-cid').val(nextId);
     $('#txt-save-cid').removeClass('is-invalid').addClass('is-valid');
-}
-
-function getCustomerById(id) {
-    return customerDatabase.find(c => c.id === id);
 }
 
 function getCustomerByName(name) {
@@ -173,11 +135,12 @@ $('#save-customer').on('submit', function (event) {
         if (!customerDatabase.some(c => c.id === id)) {
             customerDatabase.push(customer);
             showToast('success', 'Customer saved successfully !');
-            resetFormCustomer('#save-customer', '#save-customer input, #save-customer textarea');
+            resetForm('#save-customer', '#save-customer input, #save-customer textarea');
             initializeNextCustomerId();
             sortCustomerDatabaseById();
             loadAllCustomers();
             loadCustomerCount();
+            initializeOrderComboBoxes();
         } else {
             showToast('error', 'Customer ID already exists !');
         }
@@ -218,7 +181,7 @@ $('#update-customer').on('submit', function (event) {
             const index = customerDatabase.findIndex(c => c.id === id);
             customerDatabase[index] = customer;
             showToast('success', 'Customer updated successfully !');
-            resetFormCustomer('#update-customer', '#update-customer input, #update-customer textarea');
+            resetForm('#update-customer', '#update-customer input, #update-customer textarea');
             loadAllCustomers();
         } else {
             showToast('error', 'Customer ID not found !');
@@ -290,6 +253,7 @@ $('#delete-customer-btn').on('click', function () {
             $('#confirm-delete-model').modal('hide');  // Hide modal after deletion
             loadAllCustomers();
             loadCustomerCount();
+            initializeOrderComboBoxes();
         });
     } else if (customers && !Array.isArray(customers)) {
         $('#confirm-delete-model .modal-body').text('Are you sure you want to delete this customer ?');
@@ -304,6 +268,7 @@ $('#delete-customer-btn').on('click', function () {
             $('#confirm-delete-model').modal('hide');
             loadAllCustomers();
             loadCustomerCount();
+            initializeOrderComboBoxes();
         });
     } else {
         showToast('error', `Customer ${option} not found!`);

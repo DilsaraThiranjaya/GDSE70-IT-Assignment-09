@@ -58,7 +58,7 @@
 
 .button-set button {
   font-size: 0.9rem;
-  width: 100px;
+  width: 90px;
 }
 
 .table-responsive th {
@@ -89,5 +89,16 @@
 #success-toast, #error-toast {
   z-index: 1070 !important;  /* Higher than modal's z-index */
 }
+
+@media (min-width: 768px) {
+  .order-search-box {
+    height: calc(390px + 390px + 1rem) !important;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+}
+
 
 

@@ -9,8 +9,8 @@ loadAllItems();
 /*                               Validations & Form Control                             */
 //========================================================================================
 
-$('#save-item input').on('input change', realTimeValidateItem);
-$('#update-item input').on('input change', realTimeValidateItem);
+$('#save-item input').on('input change', realTimeValidate);
+$('#update-item input').on('input change', realTimeValidate);
 
 $('#txt-search-valuei').on('input change', function () {
     const value = $(this).val();
@@ -22,7 +22,7 @@ $('#txt-search-valuei').on('input change', function () {
     };
 
     if (patterns[option]) {
-        realTimeValidateItemInputItem(value, patterns[option]);
+        realTimeValidateInput(value, patterns[option], this);
     }
 });
 
@@ -36,63 +36,27 @@ $('#search-item-by').on('change', function () {
     };
 
     if (patterns[option]) {
-        realTimeValidateItemInputItem(value, patterns[option]);
+        realTimeValidateInput(value, patterns[option], '#txt-search-valuei');
     }
 });
 
 $('#close-savei-btn, #close-savei-icon').on('click', function () { 
-    resetItemForm('#save-item', '#save-item input');
+    resetForm('#save-item', '#save-item input');
     initializeNextItemCode();
 });
 $('#close-updatei-btn, #close-updatei-icon').on('click', function () { 
-    resetItemForm('#update-item', '#update-item input');
+    resetForm('#update-item', '#update-item input');
 });
 
 //========================================================================================
 /*                                 Other Functions                                      */
 //========================================================================================
 
-function realTimeValidateItem() {
-    const value = $(this).val();
-    const pattern = new RegExp($(this).attr('pattern'));
-
-    if (pattern.test(value)) {
-        $(this).removeClass('is-invalid');
-        $(this).addClass('is-valid');
-        $(this).next().hide();
-    } else {
-        $(this).removeClass('is-valid');
-        $(this).addClass('is-invalid');
-        $(this).next().show();
-    }
-}
-
-function realTimeValidateItemInputItem(input, pattern) {
-    if (pattern.test(input)) {
-        $('#txt-search-valuei').removeClass('is-invalid').addClass('is-valid');
-        $('#txt-search-valuei').next().hide();
-    } else {
-        $('#txt-search-valuei').removeClass('is-valid').addClass('is-invalid');
-        $('#txt-search-valuei').next().show();
-    }
-}
-
-function resetItemForm(formId, textFieldIds) {
-    let form = $(formId);
-    form[0].reset();
-    $(textFieldIds).removeClass('is-invalid is-valid');
-    $(textFieldIds).next().hide();
-}
-
 function initializeNextItemCode() {
     const prevCode = itemDatabase.length > 0 ? itemDatabase[itemDatabase.length - 1].code : 'I000';
     const nextCode = generateNextID(prevCode);
     $('#txt-save-icode').val(nextCode);
     $('#txt-save-icode').removeClass('is-invalid').addClass('is-valid');
-}
-
-function getItemByCode(code) {
-    return itemDatabase.find(i => i.code === code);
 }
 
 function getItemByName(name) {
@@ -151,11 +115,12 @@ $('#save-item').on('submit', function (event) {
         if (!itemDatabase.some(i => i.code === code)) {
             itemDatabase.push(item);
             showToast('success', 'Item saved successfully !');
-            resetItemForm('#save-item', '#save-item input');
+            resetForm('#save-item', '#save-item input');
             initializeNextItemCode();
             sortItemDatabaseByCode();
             loadAllItems();
             loadItemCount();
+            initializeOrderComboBoxes();
         } else {
             showToast('error', 'Item code already exists !');
         }
@@ -196,7 +161,7 @@ $('#update-item').on('submit', function (event) {
             const index = itemDatabase.findIndex(i => i.code === code);
             itemDatabase[index] = item;
             showToast('success', 'Item updated successfully !');
-            resetItemForm('#update-item', '#update-item input');
+            resetForm('#update-item', '#update-item input');
             loadAllItems();
         } else {
             showToast('error', 'Item code not found !');
@@ -264,6 +229,7 @@ $('#delete-item-btn').on('click', function () {
             $('#confirm-delete-model').modal('hide');
             loadAllItems();
             loadItemCount();
+            initializeOrderComboBoxes();
         });
     } else if (items && !Array.isArray(items)) {
         $('#confirm-delete-model .modal-body').text('Are you sure you want to delete this item ?');
@@ -277,6 +243,7 @@ $('#delete-item-btn').on('click', function () {
                 $('#confirm-delete-model').modal('hide');
                 loadAllItems();
                 loadItemCount();
+                initializeOrderComboBoxes();
             }
         });
     } else {

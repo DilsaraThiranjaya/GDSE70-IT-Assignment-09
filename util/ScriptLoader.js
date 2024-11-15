@@ -10,6 +10,8 @@ function loadScript(url, defer = true) {
 loadScript('/db/DB.js');
 loadScript('/util/CustomAlert.js');
 loadScript('/util/GenerateNextID.js');
+loadScript('/util/Validate.js');
+loadScript('/util/CommonFunctions.js');
 // loadScript('/models/User.js');
 loadScript('/models/Customer.js');
 loadScript('/models/Order.js');
