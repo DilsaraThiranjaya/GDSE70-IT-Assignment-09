@@ -639,11 +639,11 @@
                                                 class="form-control border-1 border-dark-subtle rounded-1" readonly />
                                         </div>
                                         <div class="button-set order-btns mb-3 d-flex gap-1">
-                                            <button id="delete-order-btn"
+                                            <button type="button" id="delete-order-btn"
                                                 class="btn btn-danger px-4 rounded-1">Delete</button>
-                                            <button id="update-order-btn"
+                                            <button type="button" id="update-order-btn"
                                                 class="btn btn-info text-white px-4 rounded-1">Update</button>
-                                            <button id="clear-order-btn"
+                                            <button type="button" id="clear-order-btn"
                                                 class="btn btn-success px-4 rounded-1">Clear</button>
                                         </div>
                                     </form>
@@ -727,8 +727,8 @@
                                 </div>
                                 <div class="row pt-3 m-auto">
                                     <div class="purchase bg-light position-relative p-3" style="min-height: 390px !important">
-                                        <h3 class="text-primary">Total: 0Rs/=</h3>
-                                        <h4 class="text-danger mb-5">SubTotal: 0Rs/=</h4>
+                                        <h3 id="lbl-total" class="text-primary">Total: 0.00Rs/=</h3>
+                                        <h4 id="lbl-subtotal" class="text-danger mb-5">SubTotal: 0.00Rs/=</h4>
                                         <form id="order-payment">
                                             <div class="form-group">
                                                 <div class="row">

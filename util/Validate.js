@@ -3,7 +3,7 @@ function realTimeValidate() {
     const value = input.val();
 
     // Skip if it's the order quantity input (handled separately)
-    if (input.attr('id') === 'txt-order-qty') {
+    if (input.attr('id') === 'txt-order-qty' || input.attr('id') === 'txt-order-cash') {
         return;
     }
 

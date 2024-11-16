@@ -13,11 +13,18 @@ initializeOrderComboBoxes();
 // Event delegation setup
 $('#order-detail-tbody').on('click', '.btn-danger', function() {
     $(this).closest('tr').remove();  // Only removes the tr containing the clicked button
+    initializeTotalAndSubtotal();
 });
 
 $('#tab-content-3 input[type="date"], #tab-content-3 input[pattern]').on('input change', realTimeValidate);
 
 $('#txt-order-qty').on('input', validateOrderQuantity);
+
+$('#txt-order-discount').on('input', function () {
+    initializeTotalAndSubtotal();
+});
+
+$('#txt-order-cash').on('input', validateOrderCash);
 
 //========================================================================================
 /*                                 Other Functions                                      */
@@ -50,22 +57,86 @@ function initializeOrderComboBoxes() {
     });
 }
 
+function initializeTotalAndSubtotal() {
+    // 1. Get all rows and convert to array
+    const rows = $('#order-detail-tbody tr').toArray()
+
+    // 2. Use reduce to sum up the totals
+    const total = rows.reduce((acc, row) => {
+        const cellValue = $(row).find('td:eq(4)').text();
+        return acc + parseFloat(cellValue);
+    }, 0);
+
+    // 3. Set the total to an input field, formatted to 2 decimal places
+    $('#lbl-total').text("Total: " + parseFloat(total).toFixed(2) + "Rs/=");
+    
+    // 4. Update subtotal
+    if ($('#txt-order-discount').hasClass('is-valid')) {
+        const discount = parseFloat($('#txt-order-discount').val()) / 100 * total;
+        const subtotal = total - discount;
+        $('#lbl-subtotal').text("SubTotal: " + parseFloat(subtotal).toFixed(2) + "Rs/=");
+    } else {
+        $('#lbl-subtotal').text("SubTotal: " + parseFloat(total).toFixed(2) + "Rs/=");
+    }
+
+    // 5. Update the balance
+    if ($('#txt-order-cash').hasClass('is-valid')) {
+        const cash = parseFloat($('#txt-order-cash').val());
+        const subTotal = parseFloat($('#lbl-subtotal').text().split(' ')[1]); 
+
+        if (cash >= subTotal) {
+            const balance = cash - subTotal;
+            $('#txt-order-balance').val(parseFloat(balance).toFixed(2));
+    
+            $('#txt-order-cash').removeClass('is-invalid').addClass('is-valid');  
+            $('#txt-order-balance').removeClass('is-invalid').addClass('is-valid');
+            $('#txt-order-cash').next().hide();  
+    
+        } else {
+            $('#txt-order-cash').removeClass('is-valid').addClass('is-invalid');  
+            $('#txt-order-cash').next().text('Insufficient cash !').show();  
+            $('#txt-order-balance').val('');
+        }
+    }
+}
+
 function getOrderById(id) {
     return orderDatabase.find(o => o.orderId === id);
 }
 
 function appendToOrderTable(orderDetail) {
     const item = getItemByCode(orderDetail.itemCode);
-    $('#order-detail-tbody').append(`
-        <tr>
-            <td>${orderDetail.itemCode}</td>
-            <td>${item.name}</td>
-            <td>${parseFloat(item.price).toFixed(2)}</td>
-            <td>${orderDetail.qty}</td>
-            <td>${parseFloat(item.price * orderDetail.qty).toFixed(2)}</td>
-            <td><button class="btn btn-danger btn-sm">Remove</button></td>
-        </tr>
-    `);
+    const existingRow = $(`#order-detail-tbody tr td:first-child:contains('${orderDetail.itemCode}')`).closest('tr');
+    
+    if (existingRow.length > 0) {
+        const currentQty = parseInt(existingRow.find('td:eq(3)').text());
+        const newQty = currentQty + parseInt(orderDetail.qty);
+
+        if (newQty > item.qty) {
+            showToast('error', 'Quantity exceeds available stock !');
+        } else {
+            // Update existing row
+            const newTotal = parseFloat(item.price * newQty).toFixed(2);
+        
+            existingRow.find('td:eq(3)').text(newQty);
+            existingRow.find('td:eq(4)').text(newTotal);
+
+            $('#item-select input, #item-select select').removeClass('is-valid').val('');
+        }
+    } else {
+        // Add new row
+        $('#order-detail-tbody').append(`
+            <tr class="text-center">
+                <td>${orderDetail.itemCode}</td>
+                <td>${item.name}</td>
+                <td>${parseFloat(item.price).toFixed(2)}</td>
+                <td>${orderDetail.qty}</td>
+                <td>${parseFloat(item.price * orderDetail.qty).toFixed(2)}</td>
+                <td><button class="btn btn-danger py-0 btn-sm">Remove</button></td>
+            </tr>
+        `);
+        $('#item-select input, #item-select select').removeClass('is-valid').val('');
+    }
 }
 
 function validateOrderQuantity() {
@@ -103,11 +174,78 @@ function validateOrderQuantity() {
     }
 }
 
+function validateOrderCash() { 
+    const input = $(this);
+    const cash = parseFloat($(this).val());
+    const subTotal = parseFloat($('#lbl-subtotal').text().split(' ')[1]); // Extract the total amount from the label
+    const pattern = new RegExp(input.attr('pattern'));
+
+    if (!pattern.test(input.val())) {
+        input.removeClass('is-valid').addClass('is-invalid');
+        input.next().text('Enter a valid Price').show();
+        return;
+    }
+
+    if (cash >= subTotal) {
+        // Update the balance
+        const balance = cash - subTotal;
+        $('#txt-order-balance').val(parseFloat(balance).toFixed(2));
+
+        input.removeClass('is-invalid').addClass('is-valid');
+        $('#txt-order-balance').removeClass('is-invalid').addClass('is-valid');
+        input.next().hide();
+
+    } else {
+        input.removeClass('is-valid').addClass('is-invalid');
+        input.next().text('Insufficient cash !').show();
+        $('#txt-order-balance').val('');
+    }
+}
+
+function clearForm() {
+    resetForm('#search-order', '#search-order input');
+    resetForm('#invoice-details', '#invoice-details input, #invoice-details select');
+    resetForm('#item-select', '#item-select input, #item-select select');
+    resetForm('#order-payment', '#order-payment input');
+    $('#order-detail-tbody').empty();
+    initializeTotalAndSubtotal();
+    initializeNextOrderId();
+    initializeCurrentDate();
+}
+
 //========================================================================================
 /*                                CRUD Operations                                       */
 //========================================================================================
 
 // Save Order
+$('#order-purchase-btn').on('click', function () { 
+    let isValidated = $('#invoice-details input, #invoice-details select, #order-payment input').toArray().every(element => $(element).hasClass('is-valid'));
+
+    if (isValidated) {
+        const orderId = $('#txt-order-id').val();
+        const date = $('#txt-order-date').val();
+        const customerId = $('#txt-customer-id').val();
+        const discount = parseFloat($('#txt-order-discount').val());
+        const cash = parseFloat($('#txt-order-cash').val());
+        const balance = parseFloat($('#txt-order-balance').val());
+
+        const orderDetails = $('#order-detail-tbody tr').toArray().map(row => {
+            const cells = $(row).find('td');
+            return new OrderDetail(cells.eq(0).text(), parseInt(cells.eq(3).text()));
+        });
+
+        const order = new Order(orderId, date, customerId, discount, cash, balance, orderDetails);
+        
+        if (!orderDatabase.some(o => o.orderId === orderId)) {
+            orderDatabase.push(order);
+            showToast('success', 'Order saved successfully !');
+            clearForm();
+            console.log(orderDatabase);
+        } else {
+            showToast('error', 'Order already exists !');
+        }
+    }
+});
 
 // Update Order
 
@@ -116,8 +254,27 @@ function validateOrderQuantity() {
 // Search Order
 
 // Clear Order
+$('#clear-order-btn').on('click', function () {
+    clearForm();
+});
 
-// Add Item (Load Item Details)
+// Select Customer (Load Customer Details)
+$('#select-customer-id, #txt-customer-id').on('input change', function () { 
+    const customerId = $(this).val();
+    const customer = getCustomerById(customerId);
+    if (customer) {
+        $('#select-customer-id, #txt-customer-id').val(customer.id);
+        $('#txt-customer-name').val(customer.name);
+        $('#txt-customer-address').val(customer.address);
+        $('#txt-customer-cno').val(customer.contactNo);
+        $('#txt-customer-id, #txt-customer-name, #txt-customer-address, #txt-customer-cno').removeClass('is-invalid').addClass('is-valid');
+    } else {
+        $('#select-customer-id, #txt-customer-name, #txt-customer-address, #txt-customer-cno').removeClass('is-valid').val('');
+        $('#txt-customer-id').val(customerId);
+    }
+});
+
+// Select Item (Load Item Details)
 $('#select-item-code, #txt-item-code').on('input change', function () {
     const itemCode = $(this).val();
     const item = getItemByCode(itemCode);
@@ -137,4 +294,18 @@ $('#select-item-code, #txt-item-code').on('input change', function () {
 $('#item-select').on('submit', function (event) {
     event.preventDefault();
 
+    let isValidated = $('#item-select input').toArray().every(element => $(element).hasClass('is-valid'));
+
+    if (isValidated) {
+        const itemCode = $('#txt-item-code').val();
+        const qty = parseInt($('#txt-order-qty').val());
+
+        if (itemDatabase.some(i => i.code === itemCode)) {
+            const orderDetail = new OrderDetail(itemCode, qty);
+            appendToOrderTable(orderDetail);
+            initializeTotalAndSubtotal();
+        } else {
+            showToast('error', 'Item not found !');
+        }
+    }
 });
