@@ -2,6 +2,11 @@ function realTimeValidate() {
     const input = $(this);
     const value = input.val();
 
+    // Skip if it's the order quantity input (handled separately)
+    if (input.attr('id') === 'txt-order-qty') {
+        return;
+    }
+
     // Check if this is a date input
     if (input.attr('type') === 'date') {
         if (value) {
