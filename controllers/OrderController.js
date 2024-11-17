@@ -219,7 +219,7 @@ function clearForm() {
 
 // Save Order
 $('#order-purchase-btn').on('click', function () { 
-    let isValidated = $('#invoice-details input, #invoice-details select, #order-payment input').toArray().every(element => $(element).hasClass('is-valid'));
+    let isValidated = $('#txt-order-id, #txt-order-date, #txt-customer-id, #txt-order-discount, #txt-order-cash, #txt-order-balance').toArray().every(element => $(element).hasClass('is-valid'));
 
     if (isValidated) {
         const orderId = $('#txt-order-id').val();
@@ -236,22 +236,140 @@ $('#order-purchase-btn').on('click', function () {
 
         const order = new Order(orderId, date, customerId, discount, cash, balance, orderDetails);
         
-        if (!orderDatabase.some(o => o.orderId === orderId)) {
-            orderDatabase.push(order);
-            showToast('success', 'Order saved successfully !');
-            clearForm();
-            console.log(orderDatabase);
-        } else {
-            showToast('error', 'Order already exists !');
+        if (orderDetails.length > 0) {
+            if (!orderDatabase.some(o => o.orderId === orderId)) {
+                orderDatabase.push(order);
+
+                for (const detail of orderDetails) {
+                    const item = getItemByCode(detail.itemCode);
+                    item.qty -= detail.qty;
+                    itemDatabase[itemDatabase.findIndex(i => i.code === item.code)] = item;
+                }
+
+                showToast('success', 'Order saved successfully !');
+                clearForm();
+                loadAllItems();
+                loadOrderCount();
+            } else {
+                showToast('error', 'Order already exists !');
+            }
         }
     }
 });
 
 // Update Order
+$('#update-order-btn').on('click', function () {
+    const orderId = $('#txt-order-id').val();
+    const order = getOrderById(orderId);
+
+    let isValidated = $('#txt-order-id, #txt-order-date, #txt-customer-id, #txt-order-discount, #txt-order-cash, #txt-order-balance').toArray().every(element => $(element).hasClass('is-valid'));
+
+    if (isValidated) {
+
+        const date = $('#txt-order-date').val();
+        const customerId = $('#txt-customer-id').val();
+        const discount = parseFloat($('#txt-order-discount').val());
+        const cash = parseFloat($('#txt-order-cash').val());
+        const balance = parseFloat($('#txt-order-balance').val());
+
+        if (order) {
+    
+            const orderDetails = $('#order-detail-tbody tr').toArray().map(row => {
+                const cells = $(row).find('td');
+                return new OrderDetail(cells.eq(0).text(), parseInt(cells.eq(3).text()));
+            });
+
+            for (const detail of order.orderDetails) {
+                const item = getItemByCode(detail.itemCode);
+                item.qty += detail.qty;
+                itemDatabase[itemDatabase.findIndex(i => i.code === item.code)] = item;
+            }
+    
+            if (orderDetails.length > 0) {
+                order.date = date;
+                order.customerId = customerId;
+                order.discount = discount;
+                order.cash = cash;
+                order.balance = balance;
+                order.orderDetails = orderDetails;
+    
+                for (const detail of orderDetails) {
+                    const item = getItemByCode(detail.itemCode);
+                    item.qty -= detail.qty;
+                    itemDatabase[itemDatabase.findIndex(i => i.code === item.code)] = item;
+                }
+
+                orderDatabase[orderDatabase.findIndex(o => o.orderId === orderId)] = order;
+    
+                showToast('success', 'Order updated successfully !');
+                clearForm();
+                loadAllItems();
+            }
+        } else {
+            showToast('error', 'Order not found !');
+        }
+    }
+});
 
 // Delete Order
+$('#delete-order-btn').on('click', function () {
+    const orderId = $('#txt-order-id').val();
+    const order = getOrderById(orderId);
+
+    if (order) {
+        $('#confirm-delete-model .modal-body').text('Are you sure you want to delete this order ?');
+        $('#confirm-delete-model').modal('show');
+
+        $('#confirm-delete-btn').one('click', function () {
+            for (const detail of order.orderDetails) {
+                const item = getItemByCode(detail.itemCode);
+                item.qty += detail.qty;
+                itemDatabase[itemDatabase.findIndex(i => i.code === item.code)] = item;
+            }
+    
+            orderDatabase.splice(orderDatabase.findIndex(o => o.orderId === orderId), 1);
+    
+            showToast('success', 'Order deleted successfully !');
+            $('#confirm-delete-model').modal('hide');
+            clearForm();
+            loadAllItems();
+            loadOrderCount();
+        });
+    } else {
+        showToast('error', 'Order not found !');
+    }
+});
 
 // Search Order
+$('#search-order').on('submit', function (event) {
+    event.preventDefault();
+
+    const orderId = $('#txt-search-order').val();
+    const order = getOrderById(orderId);
+
+    let isValidated = $('#txt-search-order').hasClass('is-valid');
+
+    if (isValidated) {
+        if (order) {
+            clearForm();
+    
+            $('#txt-order-id').val(order.orderId);
+            $('#txt-order-date').val(order.date);
+            $('#txt-customer-id').val(order.customerId).trigger('input');
+            $('#txt-order-discount').val(order.discount);
+            $('#txt-order-cash').val(order.cash);
+            $('#txt-order-balance').val(order.balance);
+
+            $('#txt-order-id, #txt-order-date, #txt-customer-id, #txt-order-discount, #txt-order-cash, #txt-order-balance').addClass('is-valid').removeClass('is-invalid');
+    
+            order.orderDetails.forEach(detail => appendToOrderTable(detail));
+            initializeTotalAndSubtotal();
+            showToast('success', 'Order search completed successfully !');
+        } else {
+            showToast('error', 'Order not found !');
+        }
+    }
+});
 
 // Clear Order
 $('#clear-order-btn').on('click', function () {
